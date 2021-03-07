@@ -137,14 +137,20 @@ function reThermoformingTab(task, name, techName, impressions) {
     }
 }
 
-// applies to thermoforming and quality control
+// applies to thermoforming and quality assurance
 function qualityThermoTabs(task, trayNum, techName, impressions) {
     var spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
     var subSheetName = spreadSheet.getSheetByName(task);
 
     var date = getDate();
 
-    var lastRow = subSheetName.getLastRow();
+    // selected column to check for first empty cell
+    var columnToCheck = subSheetName.getRange("D:D").getValues();
+
+    // get last row
+    var lastRow = modifiedGetLastRow(columnToCheck);
+
+    // var lastRow = subSheetName.getLastRow();
 
     // add impressions to last line
     for (var i = 0; i < impressions.length - 1; i++) {
@@ -156,13 +162,31 @@ function qualityThermoTabs(task, trayNum, techName, impressions) {
         lastRow++;
     }
 
-    for (var i = 0; i < impressions.length - 1; i++) {
-        var thickness = subSheetName.getRange(lastRow - (impressions.length - 1 + i), 5).getValue();
-        var notes = subSheetName.getRange(lastRow - (impressions.length - 1 + i), 6).getValue();
-        var quantity = subSheetName.getRange(lastRow - (impressions.length - 1 + i), 7).getValue();
+    // for(var i = 0; i < impressions.length - 1; i++){
+    //   var thickness = subSheetName.getRange(lastRow - (impressions.length - 1 + i), 5).getValue();
+    //   var notes = subSheetName.getRange(lastRow - (impressions.length - 1 + i), 6).getValue();
+    //   var quantity = subSheetName.getRange(lastRow - (impressions.length - 1 + i), 7).getValue();
 
-        lastRow++;
+    //   lastRow++;
+    // }
+}
+
+// for thermoforming and quality assurance
+// since it has formulas going down sheet
+function modifiedGetLastRow(range) {
+    var rowNum = 0;
+    var isBlank = false;
+
+    for (var row = 0; row < range.length; row++) {
+        if (range[row][0] === "" && !isBlank) {
+            rowNum = row;
+            isBlank = true;
+        } else if (range[row][0] !== "") {
+            isBlank = false;
+        }
     }
+
+    return rowNum;
 }
 
 // applies to
